@@ -1,25 +1,32 @@
-# CHisIEC
-This is an information extraction dataset for ancient Chinese historical documents, including NER and RE tasks.
+# CHisIEC知识图谱问答系统
 
- 
-## NER
-./data/ner/
-We processed the data in CONLL format.
+## 项目简介
+本项目基于北京大学数字人文研究院开发的CHisIEC数据集，构建了一个古代历史文献知识图谱问答系统。该系统具有以下特点：
+- 基于知识图谱的智能问答功能
+- 可移植的对话系统架构
+- 内置系统评估与优化功能
 
-## RE
-./data/re/
+详细的系统使用说明请参考"操作手册.pdf"。
 
-We save the dataset in JSON format.
+## 功能特点
+- 支持历史文献知识检索
+- 提供交互式问答界面
+- 集成评估与优化模块
 
-## Annotation Platform
+## 原始数据集
+### NER数据
+- 位置：./data/ner/
+- 格式：CONLL格式
 
-The two datasets were annotated using the annotation platform https://wyd.pkudh.net/, which is a deep learning-based platform where you can annotate any corpus, developed by the Digital Humanities Research Centre of Peking University.
+### RE数据
+- 位置：./data/re/
+- 格式：JSON格式
 
+## 致谢
+感谢北京大学数字人文研究院提供的CHisIEC数据集支持。
 
-## Cite
-If you use the dataset
-
-please cite the paper:
+## 引用
+如果您使用了本数据集，请引用以下论文：
 ```
 @inproceedings{tang-etal-2024-chisiec-information,
     title = "{CH}is{IEC}: An Information Extraction Corpus for {A}ncient {C}hinese History",
@@ -27,20 +34,12 @@ please cite the paper:
       Su, Qi  and
       Wang, Jun  and
       Deng, Zekun",
-    editor = "Calzolari, Nicoletta  and
-      Kan, Min-Yen  and
-      Hoste, Veronique  and
-      Lenci, Alessandro  and
-      Sakti, Sakriani  and
-      Xue, Nianwen",
     booktitle = "Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)",
     month = may,
     year = "2024",
-    address = "Torino, Italia",
-    publisher = "ELRA and ICCL",
-    url = "https://aclanthology.org/2024.lrec-main.283",
-    pages = "3192--3202",
-    abstract = "Natural Language Processing (NLP) plays a pivotal role in the realm of Digital Humanities (DH) and serves as the cornerstone for advancing the structural analysis of historical and cultural heritage texts. This is particularly true for the domains of named entity recognition (NER) and relation extraction (RE). In our commitment to expediting ancient history and culture, we present the {``}Chinese Historical Information Extraction Corpus{''}(CHisIEC). CHisIEC is a meticulously curated dataset designed to develop and evaluate NER and RE tasks, offering a resource to facilitate research in the field. Spanning a remarkable historical timeline encompassing data from 13 dynasties spanning over 1830 years, CHisIEC epitomizes the extensive temporal range and text heterogeneity inherent in Chinese historical documents. The dataset encompasses four distinct entity types and twelve relation types, resulting in a meticulously labeled dataset comprising 14,194 entities and 8,609 relations. To establish the robustness and versatility of our dataset, we have undertaken comprehensive experimentation involving models of various sizes and paradigms. Additionally, we have evaluated the capabilities of Large Language Models (LLMs) in the context of tasks related to ancient Chinese history. The dataset and code are available at \url{https://github.com/tangxuemei1995/CHisIEC}.",
+    pages = "3192--3202"
 }
-
 ```
+
+## 原始项目
+本项目基于[CHisIEC](https://github.com/tangxuemei1995/CHisIEC)数据集开发。原始标注平台由北京大学数字人文研究院开发，访问地址：https://wyd.pkudh.net/

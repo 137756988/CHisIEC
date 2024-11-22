@@ -1,0 +1,39 @@
+# Core dependencies
+streamlit
+neo4j
+pandas
+pathlib
+python-dotenv
+
+# Language Processing
+jieba
+opencc-python-reimplemented
+
+# LangChain related
+langchain
+langchain-openai
+langchain-community
+faiss-cpu
+
+# OpenAI
+openai
+
+# Evaluation tools
+ragas
+
+# Async support
+nest-asyncio
+asyncio
+
+# Monitoring and logging
+langfuse
+
+# Vector store
+faiss-cpu
+
+# Type hints
+typing-extensions
+
+# File handling
+python-dotenv
+uuid

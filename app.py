@@ -196,6 +196,12 @@ def initialize_qa_system(eval_mode: bool = False):
                 eval_config=eval_config
             )
             
+            # 检查Redis缓存状态
+            try:
+                qa_system.check_redis_cache()
+            except Exception as e:
+                st.warning(f"Redis缓存检查失败: {e}")
+            
             st.session_state.qa_system = qa_system
             st.session_state.eval_mode = eval_mode
         st.success('知识图谱加载完成！')

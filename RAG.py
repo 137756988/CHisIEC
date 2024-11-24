@@ -153,6 +153,8 @@ class HistoricalQA:
             print(f"Redis连接失败: {e}")
             print("系统将在无缓存模式下运行")
             self.redis_client = None
+        
+        self._init_entity_relations()
 
     def _init_custom_dictionary(self):
         """初始化自定义词典"""
@@ -278,30 +280,37 @@ class HistoricalQA:
 
     def answer_question(self, question: str, session_id: Optional[str] = None) -> str:
         """处理问题并生成答案"""
+        print(f"开始处理问题: {question}")
+        
         names = self._extract_names(question)
+        print(f"提取到的名字: {names}")
+        
         if not names:
             return "抱歉，我无法从问题中识别出人名或地名。"
         
         all_results = []
         for name in names:
             results = self._query_graph(name)
+            print(f"查询到 {name} 的结果数量: {len(results)}")
             all_results.extend(results)
             
         if not all_results:
             return f"抱歉，我没有找到关于 {', '.join(names)} 的相关历史记载。"
         
+        print(f"总共找到 {len(all_results)} 条相关记录")
+        
         vector_store = self._create_vector_store(all_results)
         rag_chain = self._create_rag_chain(vector_store)
         
-        # 根据是否启用评估模式来处理
-        if self.eval_config.enable:
-            return self._answer_with_evaluation(rag_chain, question, session_id)
-        else:
+        try:
             response = rag_chain.invoke({
                 "input": question,
                 "question": question
             })
             return response["answer"]
+        except Exception as e:
+            print(f"生成答案时出错: {e}")
+            return "抱歉，处理您的问题时出现了错误。"
 
     def _extract_names(self, question: str) -> List[str]:
         """提取问题中的名字并转换为繁体"""
@@ -419,3 +428,73 @@ class HistoricalQA:
             retriever=retriever,
             combine_docs_chain=document_chain
         )
+
+    def _init_entity_relations(self):
+        """初始化实体关系映射表"""
+        print("正在初始化实体关系映射...")
+        
+        # 查询所有实体关系
+        query = """
+        MATCH (n1)-[r]->(n2)
+        RETURN 
+            n1.name as entity1,
+            type(r) as relation,
+            n2.name as entity2,
+            r.context as context
+        """
+        all_relations = self.graph.query(query)
+        
+        # 构建实体到关系的映射
+        self.entity_relations = {}
+        for relation in all_relations:
+            # 处理头实体
+            if relation['entity1'] not in self.entity_relations:
+                self.entity_relations[relation['entity1']] = []
+            self.entity_relations[relation['entity1']].append({
+                'entity1': relation['entity1'],
+                'relation': relation['relation'],
+                'entity2': relation['entity2'],
+                'context': relation['context']
+            })
+            
+            # 处理尾实体
+            if relation['entity2'] not in self.entity_relations:
+                self.entity_relations[relation['entity2']] = []
+            self.entity_relations[relation['entity2']].append({
+                'entity1': relation['entity1'],
+                'relation': relation['relation'],
+                'entity2': relation['entity2'],
+                'context': relation['context']
+            })
+        
+        # 将映射存入Redis
+        if self.redis_client:
+            try:
+                self.redis_client.setex(
+                    'entity_relations_mapping',
+                    self.cache_ttl,
+                    pickle.dumps(self.entity_relations)
+                )
+                print("✅ 实体关系映射已缓存")
+            except Exception as e:
+                print(f"❌ 实体关系映射缓存失败: {e}")
+
+    def check_redis_cache(self):
+        """检查Redis缓存状态"""
+        if not self.redis_client:
+            print("⚠️ Redis未连接")
+            return
+        
+        # 检查实体关系映射
+        if self.redis_client.exists('entity_relations_mapping'):
+            print("✅ 实体关系映射已缓存")
+            try:
+                mapping_data = pickle.loads(self.redis_client.get('entity_relations_mapping'))
+                print(f"📊 缓存中的实体数量: {len(mapping_data)}")
+                # 随机显示一个实体的关系数量作为样例
+                sample_entity = next(iter(mapping_data))
+                print(f"📝 样例实体 '{sample_entity}' 的关系数量: {len(mapping_data[sample_entity])}")
+            except Exception as e:
+                print(f"❌ 缓存数据读取失败: {e}")
+        else:
+            print("❌ 未找到实体关系映射缓存")

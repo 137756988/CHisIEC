@@ -100,7 +100,8 @@ python Build_KG.py
 ```bash
 streamlit run app.py
 ```
-
+![启动界面](/pictures/run_1.png)
+![应用界面](/pictures/run_2.png)
 ![应用界面](/pictures/App_1.png)
 
 本项目特别引入了基于langfuse平台的评估流程，可通过系统左侧按钮开启：

@@ -47,6 +47,8 @@ from dataclasses import dataclass
 from langfuse import Langfuse
 from contextlib import contextmanager
 
+from pyvis.network import Network
+
 @dataclass
 class EvalConfig:
     """评估配置类"""
@@ -498,3 +500,60 @@ class HistoricalQA:
                 print(f"❌ 缓存数据读取失败: {e}")
         else:
             print("❌ 未找到实体关系映射缓存")
+
+    def get_visualization_data(self, question: str) -> str:
+        # 创建网络图实例
+        net = Network(height="400px", width="100%", bgcolor="#ffffff", font_color="black")
+        
+        # 获取实体和关系
+        names = self._extract_names(question)
+        all_results = []
+        for name in names:
+            results = self._query_graph(name)
+            all_results.extend(results)
+        
+        # 添加节点和边
+        if all_results:
+            for result in all_results:
+                net.add_node(result['entity1'], label=result['entity1'], title=result['entity1'])
+                net.add_node(result['entity2'], label=result['entity2'], title=result['entity2'])
+                net.add_edge(result['entity1'], result['entity2'], 
+                            title=result['context'], 
+                            label=result['relation'])
+        
+        # 设置物理布局选项
+        net.set_options("""
+        {
+            "physics": {
+                "forceAtlas2Based": {
+                    "gravitationalConstant": -50,
+                    "springLength": 100,
+                    "springConstant": 0.08
+                },
+                "minVelocity": 0.75,
+                "solver": "forceAtlas2Based"
+            },
+            "interaction": {
+                "zoomView": true,
+                "zoomSpeed": 0.5
+            }
+        }
+        """)
+        
+        # 添加缩放控件
+        zoom_buttons = """
+        <div style="position: absolute; bottom: 10px; right: 10px; z-index: 1000;">
+            <button onclick="network.zoomIn(0.2)" style="margin: 2px; padding: 5px; cursor: pointer;">🔍+</button>
+            <button onclick="network.zoomOut(0.2)" style="margin: 2px; padding: 5px; cursor: pointer;">🔍-</button>
+        </div>
+        """
+        
+        # 生成临时HTML文件并添加缩放控件
+        html_path = "temp_graph.html"
+        net.save_graph(html_path)
+        
+        with open(html_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+            html_content = html_content.replace('</body>', f'{zoom_buttons}</body>')
+        
+        return html_content

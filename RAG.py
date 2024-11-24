@@ -11,12 +11,18 @@ nest_asyncio.apply()
 from typing import Dict, List, Any, Optional
 from opencc import OpenCC
 from langchain_openai import ChatOpenAI
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+
+
+# 缓存
+from redis import Redis
+import pickle
+import hashlib
 
 # ragas imports
 from ragas import evaluate
@@ -132,6 +138,21 @@ class HistoricalQA:
                 public_key=langfuse_public_key,
                 secret_key=langfuse_secret_key
             )
+        
+        try:
+            self.redis_client = Redis(
+                host='localhost',
+                port=6379,
+                db=0,
+                decode_responses=False
+            )
+            self.redis_client.ping()
+            print("Redis缓存服务连接成功")
+            self.cache_ttl = 3600  # 缓存过期时间(秒)
+        except Exception as e:
+            print(f"Redis连接失败: {e}")
+            print("系统将在无缓存模式下运行")
+            self.redis_client = None
 
     def _init_custom_dictionary(self):
         """初始化自定义词典"""
@@ -312,9 +333,72 @@ class HistoricalQA:
         return self.graph.query(query, {'name': name})
 
     def _create_vector_store(self, results: List[Dict]) -> FAISS:
-        """创建向量存储"""
-        texts = [f"{r['entity1']}与{r['entity2']}之间的关系是{r['relation']}。具体描述：{r['context']}" 
-                for r in results]
+        """创建或获取向量存储"""
+        if not self.redis_client:
+            print("⚠️ Redis缓存未启用，将直接创建向量存储")
+            return self._create_vector_store_without_cache(results)
+        
+        # 为查询结果创建唯一标识
+        results_str = str(sorted([
+            f"{r['entity1']}{r['relation']}{r['entity2']}" 
+            for r in results
+        ]))
+        cache_key = f"vector_store:{hashlib.md5(results_str.encode()).hexdigest()}"
+        
+        # 尝试从缓存获取
+        cached_data = self.redis_client.get(cache_key)
+        if cached_data:
+            try:
+                print("🎯 检测到缓存命中！正在从Redis加载向量存储...")
+                vector_data = pickle.loads(cached_data)
+                embeddings = vector_data['embeddings']
+                texts = vector_data['texts']
+                return FAISS.from_texts(
+                    texts=texts,
+                    embedding=self.embedding_model,
+                    metadatas=[{"content": text} for text in texts]
+                )
+            except Exception as e:
+                print(f"❌ 缓存加载失败: {e}")
+        else:
+            print("🔄 缓存未命中，正在创建新的向量存储...")
+        
+        # 创建新的向量存储
+        texts = [
+            f"{r['entity1']}与{r['entity2']}之间的关系是{r['relation']}。具体描述：{r['context']}" 
+            for r in results
+        ]
+        
+        docs = CharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50
+        ).create_documents(texts)
+        
+        vector_store = FAISS.from_documents(docs, self.embedding_model)
+        
+        # 存储向量数据而不是整个向量存储对象
+        try:
+            vector_data = {
+                'embeddings': [doc.page_content for doc in docs],  # 只存储文本内容
+                'texts': [doc.page_content for doc in docs]
+            }
+            self.redis_client.setex(
+                cache_key,
+                self.cache_ttl,
+                pickle.dumps(vector_data)
+            )
+            print("✅ 向量存储已成功缓存")
+        except Exception as e:
+            print(f"❌ 缓存存储失败: {e}")
+        
+        return vector_store
+
+    def _create_vector_store_without_cache(self, results: List[Dict]) -> FAISS:
+        """不使用缓存创建向量存储"""
+        texts = [
+            f"{r['entity1']}与{r['entity2']}之间的关系是{r['relation']}。具体描述：{r['context']}" 
+            for r in results
+        ]
         
         docs = CharacterTextSplitter(
             chunk_size=500,

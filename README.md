@@ -73,8 +73,8 @@ pip install -r requirements.txt
 在.env文件中填入您的open_key和langfuse_key。
 
 ### 1. 知识图谱搭建
-![知识图谱示例1](/pictures/KG_1.png)
-![知识图谱示例2](/pictures/KG_2.png)
+![知识图谱示例1](/docs/images/KG_1.png)
+![知识图谱示例2](/docs/images/KG_2.png)
 
 基于四种实体节点（人物、地点、官衔、书籍）构建（注：由于关系抽取文件中"书籍"不在关系序列中，故"书籍"暂无数据）。
 
@@ -100,17 +100,17 @@ python Build_KG.py
 ```bash
 streamlit run app.py
 ```
-![启动界面](https://raw.githubusercontent.com/137756988/CHisIEC/main/docs/images/run_1.png)
-![应用界面](https://raw.githubusercontent.com/137756988/CHisIEC/main/docs/images/run_2.png)
-![应用界面](https://raw.githubusercontent.com/137756988/CHisIEC/main/docs/images/App_1.png)
+![启动界面](/docs/images/run_1.png)
+![应用界面](/docs/images/run_2.png)
+![应用界面](/docs/images/App_1.png)
 
 本项目特别引入了基于langfuse平台的评估流程，可通过系统左侧按钮开启：
 
-![评估界面](https://raw.githubusercontent.com/137756988/CHisIEC/main/docs/images/App_2.png)
+![评估界面](/docs/images/App_2.png)
 
 ### Langfuse评估系统
-![Langfuse示例1](https://raw.githubusercontent.com/137756988/CHisIEC/main/docs/images/Langfuse_1.png)
-![Langfuse示例2](https://raw.githubusercontent.com/137756988/CHisIEC/main/docs/images/Langfuse_2.png)
+![Langfuse示例1](/docs/images/Langfuse_1.png)
+![Langfuse示例2](/docs/images/Langfuse_2.png)
 
 Langfuse作为AI系统评估平台的优势：
 - 可视化数据流通路径

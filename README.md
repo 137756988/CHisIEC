@@ -100,17 +100,17 @@ python Build_KG.py
 ```bash
 streamlit run app.py
 ```
-![启动界面](/pictures/run_1.png)
-![应用界面](/pictures/run_2.png)
-![应用界面](/pictures/App_1.png)
+![启动界面](https://raw.githubusercontent.com/你的用户名/CHisIEC/main/docs/images/run_1.png)
+![应用界面](https://raw.githubusercontent.com/你的用户名/CHisIEC/main/docs/images/run_2.png)
+![应用界面](https://raw.githubusercontent.com/你的用户名/CHisIEC/main/docs/images/App_1.png)
 
 本项目特别引入了基于langfuse平台的评估流程，可通过系统左侧按钮开启：
 
-![评估界面](/pictures/App_2.png)
+![评估界面](https://raw.githubusercontent.com/你的用户名/CHisIEC/main/docs/images/App_2.png)
 
 ### Langfuse评估系统
-![Langfuse示例1](/pictures/Langfuse_1.png)
-![Langfuse示例2](/pictures/Langfuse_2.png)
+![Langfuse示例1](https://raw.githubusercontent.com/你的用户名/CHisIEC/main/docs/images/Langfuse_1.png)
+![Langfuse示例2](https://raw.githubusercontent.com/你的用户名/CHisIEC/main/docs/images/Langfuse_2.png)
 
 Langfuse作为AI系统评估平台的优势：
 - 可视化数据流通路径

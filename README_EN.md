@@ -1,4 +1,5 @@
 # CHisIEC Knowledge Graph QA System
+English Version：[README_EN.md](README_EN.md) | Chinese Version：[README.md](README.md)
 
 ## Project Introduction
 This project builds an ancient Chinese historical literature knowledge graph QA system based on the CHisIEC dataset developed by the Digital Humanities Research Institute of Peking University. The system features:

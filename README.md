@@ -1,11 +1,26 @@
 <div align="center">
-  <a href="#chinese" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin: 5px;">中文</a>
-  <a href="#english" style="padding: 10px 20px; background-color: #008CBA; color: white; text-decoration: none; border-radius: 5px; margin: 5px;">English</a>
+  <button onclick="switchLanguage('chinese')" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin: 5px; border: none; cursor: pointer;">中文</button>
+  <button onclick="switchLanguage('english')" style="padding: 10px 20px; background-color: #008CBA; color: white; text-decoration: none; border-radius: 5px; margin: 5px; border: none; cursor: pointer;">English</button>
 </div>
+
+<script>
+function switchLanguage(lang) {
+  // 隐藏所有语言内容
+  document.getElementById('chinese').style.display = 'none';
+  document.getElementById('english').style.display = 'none';
+  // 显示选中的语言内容
+  document.getElementById(lang).style.display = 'block';
+}
+
+// 默认显示中文
+window.onload = function() {
+  switchLanguage('chinese');
+}
+</script>
 
 ---
 
-<div id="chinese">
+<div id="chinese" style="display: block;">
 
 # CHisIEC知识图谱问答系统
 
@@ -152,9 +167,7 @@ Langfuse作为AI系统评估平台的优势：
 
 </div>
 
----
-
-<div id="english">
+<div id="english" style="display: none;">
 
 # CHisIEC Knowledge Graph QA System
 

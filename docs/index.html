@@ -4,9 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>CHisIEC Knowledge Graph QA System</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .language-content {
             display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .active {
@@ -44,21 +48,32 @@
         <button class="btn btn-en" onclick="switchLanguage('en')">English</button>
     </div>
 
-    <div id="cn-content" class="language-content active">
-        <!-- 中文内容 -->
-    </div>
-
-    <div id="en-content" class="language-content">
-        <!-- 英文内容 -->
-    </div>
+    <div id="cn-content" class="language-content active"></div>
+    <div id="en-content" class="language-content"></div>
 
     <script>
+        async function loadReadme() {
+            try {
+                const cnResponse = await fetch('README.md');
+                const cnText = await cnResponse.text();
+                document.getElementById('cn-content').innerHTML = marked.parse(cnText);
+
+                const enResponse = await fetch('README_EN.md');
+                const enText = await enResponse.text();
+                document.getElementById('en-content').innerHTML = marked.parse(enText);
+            } catch (error) {
+                console.error('Error loading README files:', error);
+            }
+        }
+
         function switchLanguage(lang) {
             document.querySelectorAll('.language-content').forEach(el => {
                 el.classList.remove('active');
             });
             document.getElementById(lang + '-content').classList.add('active');
         }
+
+        window.onload = loadReadme;
     </script>
 </body>
 

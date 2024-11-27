@@ -1,4 +1,5 @@
-# CHisIEC知识图谱问答系统 | [English Version](README_EN.md)
+# CHisIEC知识图谱问答系统 
+中文版本：[README.md](README.md) | English Version：[README_EN.md](README_EN.md)
 
 ## 项目简介
 本项目基于北京大学数字人文研究院开发的CHisIEC数据集，构建了一个古代历史文献知识图谱问答系统。该系统具有以下特点：

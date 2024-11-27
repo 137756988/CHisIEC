@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CHisIEC Knowledge Graph QA System</title>
+    <style>
+        .language-content {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .language-switch {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-cn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-en {
+            background-color: #008CBA;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="language-switch">
+        <button class="btn btn-cn" onclick="switchLanguage('cn')">中文</button>
+        <button class="btn btn-en" onclick="switchLanguage('en')">English</button>
+    </div>
+
+    <div id="cn-content" class="language-content active">
+        <!-- 中文内容 -->
+    </div>
+
+    <div id="en-content" class="language-content">
+        <!-- 英文内容 -->
+    </div>
+
+    <script>
+        function switchLanguage(lang) {
+            document.querySelectorAll('.language-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(lang + '-content').classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
